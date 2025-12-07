@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f0f0f',
+                        accent: '#8a2be2'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: system-ui, sans-serif; }
+    </style>
+</head>
+<body class="bg-primary text-gray-200 font-sans h-screen overflow-hidden">
+    <div class="flex flex-col h-full">
+        <header class="bg-black/90 border-b border-accent/20 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i data-feather="shield" class="text-accent w-6 h-6"></i>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="{{ url_for('exit') }}" class="text-gray-400 hover:text-red-500 transition" onclick="window.close()">
+                    <i data-feather="x" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </header>
+
+        <div class="flex flex-1 overflow-hidden">
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-black/50 border border-accent/20 rounded-xl p-6 mb-6">
+                        <h2 class="text-lg font-semibold mb-6 flex items-center">
+                            <i data-feather="activity" class="w-5 h-5 mr-2"></i>
+                            Checking Progress
+                        </h2>
+                        
+
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-black/30 border border-accent/20 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i data-feather="database" class="w-4 h-4 mr-2 text-gray-400"></i>
+                                    <span class="text-gray-300">Total</span>
+                                </div>
+                                <div class="text-2xl font-bold mt-2 text-center" id="totalTokens">{{total}}</div>
+                            </div>
+                            <div class="bg-black/30 border border-accent/20 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i data-feather="check-circle" class="w-4 h-4 mr-2 text-gray-400"></i>
+                                    <span class="text-gray-300">Checked</span>
+                                </div>
+                                <div class="text-2xl font-bold mt-2 text-center" id="checkedTokens">0</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i data-feather="check" class="w-4 h-4 mr-2 text-green-400"></i>
+                                    <span class="text-gray-300">Valid</span>
+                                </div>
+                                <div class="text-xl font-bold mt-2 text-center text-green-400" id="validTokens">0</div>
+                            </div>
+                            <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i data-feather="x" class="w-4 h-4 mr-2 text-red-400"></i>
+                                    <span class="text-gray-300">Invalid</span>
+                                </div>
+                                <div class="text-xl font-bold mt-2 text-center text-red-400" id="invalidTokens">0</div>
+                            </div>
+                            <div class="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i data-feather="alert-triangle" class="w-4 h-4 mr-2 text-yellow-400"></i>
+                                    <span class="text-gray-300">Error</span>
+                                </div>
+                                <div class="text-xl font-bold mt-2 text-center text-yellow-400" id="errorTokens">0</div>
+                            </div>
+                        </div>
+
+
+                        <div class="bg-black/30 border border-accent/20 rounded-lg p-4">
+                            <div class="flex items-center justify-center">
+                                <i data-feather="clock" class="w-4 h-4 mr-2 text-gray-400"></i>
+                                <span class="text-gray-300">Elapsed time:</span>
+                                <span class="ml-2 font-mono text-lg" id="timer">00:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <button id="actionButton" 
+                            class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium flex items-center justify-center transition">
+                        <i data-feather="stop-circle" class="w-5 h-5 mr-2"></i>
+                        <span id="actionButtonText">Stop Checking</span>
+                    </button>
+                </div>
+            </main>
+        </div>
+
+        <footer class="bg-black/90 border-t border-accent/20 px-4 py-2 text-sm text-gray-400 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <span class="flex items-center">
+                    <i data-feather="info" class="w-4 h-4 mr-1"></i>
+                    <span>V0.1</span>
+                </span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        feather.replace();
+
+ 
+        const checkedTokensEl = document.getElementById('checkedTokens');
+        const validTokensEl = document.getElementById('validTokens');
+        const invalidTokensEl = document.getElementById('invalidTokens');
+        const errorTokensEl = document.getElementById('errorTokens');
+        const timerEl = document.getElementById('timer');
+        const actionButton = document.getElementById('actionButton');
+        const actionButtonText = document.getElementById('actionButtonText');
+
+        let updateInterval = null;
+        let isChecking = true;
+
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/check_status');
+                const data = await response.json();
+
+
+                checkedTokensEl.textContent = data.checked || 0;
+                validTokensEl.textContent = data.valid || 0;
+                invalidTokensEl.textContent = data.invalid || 0;
+                errorTokensEl.textContent = data.error || 0;
+                timerEl.textContent = formatTime(data.elapsed_time || 0);
+
+                if (!data.is_running && isChecking) {
+                    isChecking = false;
+                    stopPolling();
+                    updateButtonToBack();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+
+        async function stopChecking() {
+            try {
+                const response = await fetch('/api/stop_check', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    isChecking = false;
+                    stopPolling();
+                    updateButtonToBack();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+
+        function updateButtonToBack() {
+            actionButton.className = 'w-full bg-accent hover:bg-accent/90 text-white py-3 rounded-lg font-medium flex items-center justify-center transition';
+            actionButtonText.textContent = 'Back';
+            actionButton.innerHTML = '<i data-feather="arrow-left" class="w-5 h-5 mr-2"></i><span>Back</span>';
+            actionButton.onclick = () => {
+                window.location.href = '/';
+            };
+            feather.replace();
+        }
+
+
+        actionButton.onclick = () => {
+            if (isChecking) {
+                stopChecking();
+            } else {
+                window.location.href = '/';
+            }
+        };
+
+
+        function startPolling() {
+            updateStatus();
+            updateInterval = setInterval(updateStatus, 1000);
+        }
+
+
+        function stopPolling() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+        }
+
+
+        startPolling();
+
+
+        window.addEventListener('beforeunload', () => {
+            stopPolling();
+        });
+    </script>
+</body>
+</html>
