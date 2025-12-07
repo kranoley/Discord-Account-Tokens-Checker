@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f0f0f',
+                        accent: '#8a2be2'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+
+
+        body { font-family: system-ui, sans-serif; }
+    </style>
+</head>
+<body class="bg-primary text-gray-200 font-sans h-screen overflow-hidden">
+    <div class="flex flex-col h-full">
+
+        <header class="bg-black/90 border-b border-accent/20 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i data-feather="shield" class="text-accent w-6 h-6"></i>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="{{ url_for('exit') }}" class="text-gray-400 hover:text-red-500 transition" onclick="window.close()">
+                    <i data-feather="x" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </header>
+
+
+        <div class="flex flex-1 overflow-hidden">
+
+            <aside class="w-16 bg-black/80 border-r border-accent/20 flex flex-col items-center py-4 space-y-6">
+                <button class="p-2 rounded-lg text-gray-400 hover:text-accent hover:bg-accent/10 transition"
+                        onclick="window.location.href='{{ url_for('home') }}'">
+                    <i data-feather="home" class="w-5 h-5"></i>
+                </button>
+                <button class="p-2 rounded-lg bg-accent/10 text-accent">
+                    <i data-feather="settings" class="w-5 h-5"></i>
+                </button>
+            </aside>
+
+
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-3xl mx-auto">
+<form method="POST" action="{{ url_for('settings') }}" class="max-w-3xl mx-auto">
+    <div class="bg-black/50 border border-accent/20 rounded-xl p-6 mb-6">
+        <h2 class="text-lg font-semibold mb-4 flex items-center">
+            <i data-feather="sliders" class="w-5 h-5 mr-2"></i>
+            Check Settings
+        </h2>
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <label class="text-gray-300">Threads</label>
+                <input type="number" name="threads" value="1" min="1" class="bg-black/30 border border-accent/20 rounded-lg px-3 py-1 text-right w-20">
+            </div>
+            <div class="flex items-center justify-between">
+                <label class="text-gray-300">Timeout</label>
+                <input type="number" name="timeout" value="10" min="1" class="bg-black/30 border border-accent/20 rounded-lg px-3 py-1 text-right w-20">
+            </div>
+            <div class="flex items-center justify-between">
+                <label class="text-gray-300">Use proxy</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="use_proxy" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-black/50 border border-accent/20 rounded-xl p-6">
+        <h2 class="text-lg font-semibold mb-4 flex items-center">
+            <i data-feather="hard-drive" class="w-5 h-5 mr-2"></i>
+            Output format
+        </h2>
+        <div class="space-y-4">
+            <input type="text" name="output_format" placeholder="{token}:{username}:{id}" value="{token}:{username}:{id}" class="bg-black/30 border border-accent/20 rounded-lg px-3 py-2 w-full">
+        </div>
+    </div>
+
+    <button type="submit" class="w-full bg-accent hover:bg-accent/90 text-white py-3 rounded-lg font-medium flex items-center justify-center transition mt-6">
+        <i data-feather="save" class="w-5 h-5 mr-2"></i>
+        Save Settings
+    </button>
+</form>
+                </div>
+            </main>
+        </div>
+
+        <footer class="bg-black/90 border-t border-accent/20 px-4 py-2 text-sm text-gray-400 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <span class="flex items-center">
+                    <i data-feather="info" class="w-4 h-4 mr-1"></i>
+                    <span>V0.1</span>
+                </span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>
