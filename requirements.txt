@@ -1,0 +1,6 @@
+PyQt6
+PyQt6-WebEngine
+PyQt6-Qt6
+requests
+pywebview
+flask
