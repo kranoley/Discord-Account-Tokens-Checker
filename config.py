@@ -10,6 +10,7 @@ config = {
         'token', 'id', 'username', 'global_name', 'mfa_enabled',
         'locale', 'email', 'verified', 'phone'
     ],
+    
     'tokens': [],
     'path': ''
 }
