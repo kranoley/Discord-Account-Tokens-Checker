@@ -8,6 +8,7 @@ import threading
 from typing import Optional, Tuple, List
 
 
+
 def extract_placeholders(template: str) -> List[str]:
     matches = re.findall(r'\{(\w+)\}', template)
     seen = set()
