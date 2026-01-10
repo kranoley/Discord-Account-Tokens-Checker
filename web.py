@@ -20,6 +20,7 @@ def extract_placeholders(template: str) -> List[str]:
     return unique
 
 
+
 def get_tokens(file_path: str) -> Optional[Tuple[int, List[str]]]:
     TOKEN_PATTERN = re.compile(r'[\w-]{24,26}\.[\w-]{6}\.[\w-]{27,45}')
     if not os.path.isfile(file_path):
