@@ -2,6 +2,7 @@ import webview
 from web import app
 
 
+
 window = webview.create_window(
     'Discord Tokens Checker',
     app,
